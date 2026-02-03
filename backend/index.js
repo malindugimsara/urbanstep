@@ -8,6 +8,7 @@ import authjwt from './middleware/auth.js';
 import orderRouter from './router/orderRouter.js';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import router from './router/order1Router.js';
 
 dotenv.config();
 const app = express();
@@ -29,7 +30,8 @@ app.use(authjwt)
 
 app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
-app.use("/api/order", orderRouter);
+// app.use("/api/order", orderRouter);
+app.use("/api/order1", router);
 
 app.listen(3000, () => {
   console.log('Server is running on port 3000');
