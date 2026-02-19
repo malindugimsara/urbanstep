@@ -54,6 +54,15 @@ const orderSchema1 = new mongoose.Schema(
       type: [itemSchema],
       required: true,
     },
+     price: {
+      type: Number,
+      required: true,
+    },
+    
+     deliveryFee: {
+      type: Number,
+      required: true,
+    },
 
     grandTotal: {
       type: Number,

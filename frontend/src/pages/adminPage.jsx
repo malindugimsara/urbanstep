@@ -167,18 +167,18 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { CiSquarePlus } from "react-icons/ci";
-import EditProduct from "./admin/editproduct";
-import AddProduct from "./admin/addproduct";
-import AdminOrderPage from "./admin/adminOrderPage";
-import ProductPage from "./admin/product";
+import EditProduct from "./admin/product/editproduct";
+import AddProduct from "./admin/product/addproduct";
+import AdminOrderPage from "./admin/Order/adminOrderPage";
+import ProductPage from "./admin/product/product";
 import { MdOutlineWarehouse } from "react-icons/md";
 import { LiaFileInvoiceSolid } from "react-icons/lia";
 import CreateAdminAccount from "./admin/CreateAdminAccount";
 import ReportGenerate from "./admin/ReportGenerate";
 import WelcomeAdmin from "./admin/WelcomeAdmin";
-import UsersPage from "./admin/UserPage";
-import EditUser from "./admin/EditUser";
-import AddOrderPage from "./admin/AddOrder";
+import UsersPage from "./admin/User/UserPage";
+import EditUser from "./admin/User/EditUser";
+import AddOrderPage from "./admin/Order/AddOrder/AddOrder";
 
 
 

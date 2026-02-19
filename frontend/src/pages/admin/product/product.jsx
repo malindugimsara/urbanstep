@@ -4,7 +4,7 @@ import { FaPlus } from "react-icons/fa";
 import { MdOutlineDeleteOutline, MdOutlineEdit } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 
-import Loader from "../../component/loader";
+import Loader from "../../../component/loader";
 
 export default function ProductPage() {
 

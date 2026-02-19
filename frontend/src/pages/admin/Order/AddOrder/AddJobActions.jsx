@@ -8,7 +8,7 @@ export default function AddJobActions({ addItem, submitJob, showSpinner }) {
   const navigate = useNavigate();
   
   function closeEditor() {
-    navigate("/admin/viewjob");
+    navigate("/admin/orders");
   }
 
   return (

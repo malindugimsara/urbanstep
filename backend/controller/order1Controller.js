@@ -3,7 +3,6 @@ import Order1 from "../modules/order1.js";
 
 /**
  * CREATE NEW ORDER
- * POST /api/job
  */
 export const createOrder = async (req, res) => {
   try {
@@ -28,37 +27,61 @@ export const createOrder = async (req, res) => {
     }
 
     // CALCULATE GRAND TOTAL (BACKEND TRUST)
-    let grandTotal = 0;
+    let totalPrice = 0;
+let totalDeliveryFee = 0;
+let grandTotal = 0;
 
-    const normalizedItems = items.map((item) => {
-      const itemTotal = Number(item?.data?.totalFee) || 0;
-      grandTotal += itemTotal;
+const normalizedItems = items.map((item) => {
+  const price = Number(item?.data?.price) || 0;
+  const deliveryFee = Number(item?.data?.deliveryFee) || 0;
+  const quantity = Number(item?.data?.quantity) || 0;
 
-      return {
-        type: item.type,
-        status: item.status || "Pending",
-        data: {
-          name: item.data.name || "",
-          quantity: Number(item.data.quantity) || 0,
-          size: item.data.size || "",
-          price: Number(item.data.price) || 0,
-          deliveryFee: Number(item.data.deliveryFee) || 0,
-          totalFee: itemTotal,
-        },
-      };
-    });
+  const totalFee = (price * quantity) + deliveryFee;
+
+  totalPrice += price * quantity;
+  totalDeliveryFee += deliveryFee;
+  grandTotal += totalFee;
+
+  return {
+    type: item.type,
+    status: item.status || "Pending",
+    data: {
+      name: item.data.name || "",
+      quantity,
+      size: item.data.size || "",
+      price,
+      deliveryFee,
+      totalFee,
+    },
+  };
+});
+
 
     // AUTO GENERATE ORDER ID
-    const orderId = "ORD-" + Date.now();
+   // FIND LAST ORDER
+const lastOrder = await Order1.findOne().sort({ createdAt: -1 });
+
+let nextNumber = 1;
+
+if (lastOrder && lastOrder.orderId) {
+  const lastNumber = parseInt(lastOrder.orderId.split("-")[1]);
+  nextNumber = lastNumber + 1;
+}
+
+const orderId = `ORD-${nextNumber.toString().padStart(3, "0")}`;
+
 
     // CREATE ORDER
-    const order = new Order1({
-      orderId,
-      customer,
-      date: date ? new Date(date) : new Date(),
-      items: normalizedItems,
-      grandTotal,
-    });
+   const order = new Order1({
+  orderId,
+  customer,
+  date: date ? new Date(date) : new Date(),
+  items: normalizedItems,
+  price: totalPrice,
+  deliveryFee: totalDeliveryFee,
+  grandTotal,
+});
+
 
     await order.save();
 
@@ -76,7 +99,6 @@ export const createOrder = async (req, res) => {
 
 /**
  * GET ALL ORDERS
- * GET /api/job
  */
 export const getAllOrders = async (req, res) => {
   try {
@@ -93,7 +115,6 @@ export const getAllOrders = async (req, res) => {
 
 /**
  * GET SINGLE ORDER
- * GET /api/job/:id
  */
 export const getOrderById = async (req, res) => {
   try {
@@ -118,7 +139,6 @@ export const getOrderById = async (req, res) => {
 
 /**
  * UPDATE ITEM STATUS
- * PATCH /api/job/:orderId/item/:index
  */
 export const updateItemStatus = async (req, res) => {
   try {
@@ -150,7 +170,6 @@ export const updateItemStatus = async (req, res) => {
 
 /**
  * DELETE ORDER
- * DELETE /api/job/:id
  */
 export const deleteOrder = async (req, res) => {
   try {
