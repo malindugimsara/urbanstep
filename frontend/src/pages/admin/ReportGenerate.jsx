@@ -4,62 +4,58 @@ import toast from "react-hot-toast";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { FiDownload, FiFileText, FiCalendar, FiPackage } from "react-icons/fi";
-import { IoMdArrowRoundBack } from "react-icons/io";
-import { Link } from "react-router-dom";
 
-export default function ReportGenerate() {
-    const [jobs, setJobs] = useState([]);
+export default function OrderReportGenerate() {
+    const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [generating, setGenerating] = useState(false);
     const [dateFilter, setDateFilter] = useState({ from: "", to: "" });
     const [statusFilter, setStatusFilter] = useState("");
-    const [filteredJobs, setFilteredJobs] = useState([]);
+    const [filteredOrders, setFilteredOrders] = useState([]);
 
     useEffect(() => {
-        fetchJobs();
+        fetchOrders();
     }, []);
 
     useEffect(() => {
-        const filterJobs = () => {
-            let filtered = [...jobs];
+        const filterOrders = () => {
+            let filtered = [...orders];
 
             if (statusFilter) {
-                filtered = filtered.filter(job => job.status === statusFilter);
+                filtered = filtered.filter(order => order.items[0]?.status === statusFilter);
             }
 
             if (dateFilter.from) {
-                filtered = filtered.filter(job => {
-                    const jobDate = new Date(job.needDate);
-                    const fromDate = new Date(dateFilter.from);
-                    return jobDate >= fromDate;
+                filtered = filtered.filter(order => {
+                    const orderDate = new Date(order.date);
+                    return orderDate >= new Date(dateFilter.from);
                 });
             }
 
             if (dateFilter.to) {
-                filtered = filtered.filter(job => {
-                    const jobDate = new Date(job.needDate);
-                    const toDate = new Date(dateFilter.to);
-                    return jobDate <= toDate;
+                filtered = filtered.filter(order => {
+                    const orderDate = new Date(order.date);
+                    return orderDate <= new Date(dateFilter.to);
                 });
             }
 
-            setFilteredJobs(filtered);
+            setFilteredOrders(filtered);
         };
 
-        filterJobs();
-    }, [jobs, dateFilter, statusFilter]);
+        filterOrders();
+    }, [orders, dateFilter, statusFilter]);
 
-    const fetchJobs = async () => {
+    const fetchOrders = async () => {
         try {
             const token = localStorage.getItem("token");
             const response = await axios.get(
-                import.meta.env.VITE_BACKEND_URL + "/api/jobcustomer",
+                import.meta.env.VITE_BACKEND_URL + "/api/order1",
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            setJobs(response.data);
+            setOrders(response.data);
             setLoading(false);
         } catch {
-            toast.error("Failed to fetch jobs");
+            toast.error("Failed to fetch orders");
             setLoading(false);
         }
     };
@@ -67,7 +63,7 @@ export default function ReportGenerate() {
     const generatePDFReport = () => {
         setGenerating(true);
         try {
-            if (filteredJobs.length === 0) {
+            if (filteredOrders.length === 0) {
                 toast.error("No data available to generate report");
                 setGenerating(false);
                 return;
@@ -79,14 +75,14 @@ export default function ReportGenerate() {
             // Title & header
             doc.setFontSize(20);
             doc.setTextColor(40, 116, 166);
-            doc.text("Print Shop", 20, 25);
+            doc.text("URBAN STEP ", 20, 25);
 
             doc.setFontSize(16);
             doc.setTextColor(0, 0, 0);
-            doc.text("Job Report", 20, 35);
+            doc.text("Order Report", 20, 35);
             doc.setFontSize(10);
             doc.text(`Generated on: ${currentDate}`, 20, 45);
-            doc.text(`Total Jobs: ${filteredJobs.length}`, 20, 52);
+            doc.text(`Total Orders: ${filteredOrders.length}`, 20, 52);
 
             // Filters info
             let filterInfo = "Filters Applied: ";
@@ -94,12 +90,11 @@ export default function ReportGenerate() {
             if (dateFilter.from) filterInfo += `From: ${dateFilter.from}, `;
             if (dateFilter.to) filterInfo += `To: ${dateFilter.to}, `;
             if (filterInfo === "Filters Applied: ") filterInfo += "None";
-
             doc.text(filterInfo, 20, 59);
 
             // Status summary
-            const statusCounts = filteredJobs.reduce((acc, job) => {
-                acc[job.status] = (acc[job.status] || 0) + 1;
+            const statusCounts = filteredOrders.reduce((acc, order) => {
+                acc[order.items[0]?.status] = (acc[order.items[0]?.status] || 0) + 1;
                 return acc;
             }, {});
 
@@ -116,18 +111,17 @@ export default function ReportGenerate() {
             });
 
             // Table data
-            const tableData = filteredJobs.map(job => [
-                job.jobID || "N/A",
-                job.name || "N/A",
-                job.email || "N/A",
-                job.phoneNumber || "N/A",
-                job.status || "N/A",
-                job.needDate ? new Date(job.needDate).toLocaleDateString() : "N/A",
-                job.details ? (job.details.substring(0, 30) + (job.details.length > 30 ? "..." : "")) : "N/A"
+            const tableData = filteredOrders.map(order => [
+                order.orderId || "N/A",
+                order.customer?.name || "N/A",
+                order.customer?.phoneNumber || "N/A",
+                order.grandTotal?.toFixed(2) || "N/A",
+                order.items[0]?.status || "N/A",
+                order.date ? new Date(order.date).toLocaleDateString() : "N/A"
             ]);
 
             autoTable(doc, {
-                head: [['Job ID', 'Name', 'Email', 'Phone Number', 'Status', 'Need Date', 'Details']],
+                head: [['Order ID', 'Customer Name', 'Phone', 'Total', 'Status', 'Date']],
                 body: tableData,
                 startY: yPosition + 10,
                 styles: { fontSize: 8, cellPadding: 2 },
@@ -135,12 +129,11 @@ export default function ReportGenerate() {
                 alternateRowStyles: { fillColor: [245, 245, 245] },
                 columnStyles: {
                     0: { cellWidth: 25 },
-                    1: { cellWidth: 25 },
+                    1: { cellWidth: 35 },
                     2: { cellWidth: 30 },
-                    3: { cellWidth: 35 },
-                    4: { cellWidth: 20 },
-                    5: { cellWidth: 22 },
-                    6: { cellWidth: 25 }
+                    3: { cellWidth: 20 },
+                    4: { cellWidth: 25 },
+                    5: { cellWidth: 25 },
                 }
             });
 
@@ -151,14 +144,14 @@ export default function ReportGenerate() {
                 doc.setFontSize(8);
                 doc.setTextColor(128, 128, 128);
                 doc.text(
-                    `Page ${i} of ${pageCount} - Channa Graphic`,
+                    `Page ${i} of ${pageCount} - Urban Step`,
                     doc.internal.pageSize.getWidth() / 2,
                     doc.internal.pageSize.getHeight() - 10,
                     { align: 'center' }
                 );
             }
 
-            doc.save(`job_report_${new Date().toISOString().split('T')[0]}.pdf`);
+            doc.save(`order_report_${new Date().toISOString().split('T')[0]}.pdf`);
             toast.success("Report generated successfully!");
         } catch (error) {
             console.error("Error generating PDF:", error);
@@ -183,10 +176,10 @@ export default function ReportGenerate() {
                     <div className="flex items-center">
                         <FiFileText className="text-3xl text-blue-600 mr-4" />
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-800">Reports</h1>
-                            <p className="text-gray-600 mt-1">Generate comprehensive job reports</p>
+                            <h1 className="text-3xl font-bold text-gray-800">Orders Report</h1>
+                            <p className="text-gray-600 mt-1">Generate comprehensive order reports</p>
                             <p className="text-sm text-blue-600 mt-1">
-                                Loaded: {jobs.length} jobs | Filtered: {filteredJobs.length} jobs
+                                Loaded: {orders.length} orders | Filtered: {filteredOrders.length} orders
                             </p>
                         </div>
                     </div>
@@ -263,8 +256,8 @@ export default function ReportGenerate() {
                     <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm opacity-90">Total Jobs</p>
-                                <p className="text-3xl font-bold">{filteredJobs.length}</p>
+                                <p className="text-sm opacity-90">Total Orders</p>
+                                <p className="text-3xl font-bold">{filteredOrders.length}</p>
                             </div>
                             <FiPackage className="text-2xl opacity-80" />
                         </div>
@@ -274,7 +267,7 @@ export default function ReportGenerate() {
                             <div>
                                 <p className="text-sm opacity-90">Pending</p>
                                 <p className="text-3xl font-bold">
-                                    {filteredJobs.filter(j => j.status === "Pending").length}
+                                    {filteredOrders.filter(o => o.items[0]?.status === "Pending").length}
                                 </p>
                             </div>
                             <FiPackage className="text-2xl opacity-80" />
@@ -285,7 +278,7 @@ export default function ReportGenerate() {
                             <div>
                                 <p className="text-sm opacity-90">In Progress</p>
                                 <p className="text-3xl font-bold">
-                                    {filteredJobs.filter(j => j.status === "In Progress").length}
+                                    {filteredOrders.filter(o => o.items[0]?.status === "In Progress").length}
                                 </p>
                             </div>
                             <FiPackage className="text-2xl opacity-80" />
@@ -296,54 +289,66 @@ export default function ReportGenerate() {
                             <div>
                                 <p className="text-sm opacity-90">Completed</p>
                                 <p className="text-3xl font-bold">
-                                    {filteredJobs.filter(j => j.status === "Completed").length}
+                                    {filteredOrders.filter(o => o.items[0]?.status === "Completed").length}
                                 </p>
                             </div>
                             <FiPackage className="text-2xl opacity-80" />
                         </div>
                     </div>
                 </div>
-
                 {/* Preview Table */}
                 <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
                     <div className="px-6 py-4 border-b border-gray-200">
                         <h3 className="text-lg font-semibold text-gray-800">Report Preview</h3>
-                        <p className="text-sm text-gray-600">Showing {filteredJobs.length} jobs</p>
+                        <p className="text-sm text-gray-600">Showing {filteredOrders.length} orders</p>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead className="bg-gray-50">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Job ID</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer Name</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone Number</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Need Date</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Date</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
-                                {filteredJobs.slice(0, 10).map((job, index) => (
+                                {filteredOrders.slice(0, 10).map((order, index) => (
                                     <tr key={index} className="hover:bg-gray-50">
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{job.jobID}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{job.name}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{job.email}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                                job.status === "Completed" ? "bg-green-100 text-green-800" :
-                                                job.status === "In Progress" ? "bg-purple-100 text-purple-800" :
-                                                "bg-yellow-100 text-yellow-800"
-                                            }`}>{job.status}</span>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{order.orderId}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{order.customer?.name}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{order.customer?.phoneNumber}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rs.{order.grandTotal?.toFixed(2)}</td>
+                                        <td className="p-4">
+                                            {order.items?.map((item, idx) => (
+                                                <span
+                                                key={idx}
+                                                className={`font-semibold flex flex-col  ${
+                                                    item.status === "Pending"
+                                                    ? "text-red-500"
+                                                    : item.status === "In Progress"
+                                                    ? "text-blue-500"
+                                                    : item.status === "Completed"
+                                                    ? "text-green-500"
+                                                    : "text-gray-500"
+                                                }`}
+                                                >
+                                                {item.status}
+                                                </span>
+                                            ))}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {job.needDate ? new Date(job.needDate).toLocaleDateString() : "N/A"}
+                                            {order.date ? new Date(order.date).toLocaleDateString() : "N/A"}
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
-                        {filteredJobs.length > 10 && (
+                        {filteredOrders.length > 10 && (
                             <div className="px-6 py-4 bg-gray-50 text-center">
-                                <p className="text-sm text-gray-600">... and {filteredJobs.length - 10} more jobs</p>
+                                <p className="text-sm text-gray-600">... and {filteredOrders.length - 10} more orders</p>
                             </div>
                         )}
                     </div>

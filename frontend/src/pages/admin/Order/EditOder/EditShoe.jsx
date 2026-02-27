@@ -1,38 +1,6 @@
 import React from "react";
-import { useState, useEffect } from "react";
-import axios from "axios";
 
-
-export default function AddShoe({ jobData, setJobData, status, setStatus }) {
-
-    const [suggestions, setSuggestions] = useState([]);
-    const [showDropdown, setShowDropdown] = useState(false);
-
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-    useEffect(() => {
-    const fetchProducts = async () => {
-        if (!jobData.name) {
-            setSuggestions([]);
-            return;
-        }
-
-        try {
-            const res = await axios.get(
-                `${backendUrl}/api/product/search?q=${jobData.name}`
-            );
-            setSuggestions(res.data);
-            setShowDropdown(true);
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    const delayDebounce = setTimeout(fetchProducts, 300);
-    return () => clearTimeout(delayDebounce);
-    }, [jobData.name]);
-
-
+export default function EditShoe({ jobData, setJobData, status, setStatus }) {
 
     // Generic change handler
     const handleChange = (field, value) => {
@@ -63,40 +31,20 @@ export default function AddShoe({ jobData, setJobData, status, setStatus }) {
 
             {/* Title */}
             <div className="p-4 bg-[#F8F9FA] border border-gray-300 rounded-xl mb-6 flex justify-center items-center">
-                <h1 className="text-2xl font-bold text-[#2C3E50]">Shoe</h1>
+                <h1 className="text-2xl font-bold text-[#2C3E50]">Edit Shoe</h1>
             </div>
 
             {/* Shoe Name & Size */}
             <div className="grid grid-cols-2 gap-6 mt-6">
-                <div className="relative">
+                <div>
                     <label className="block font-semibold mb-2">Shoe Name</label>
                     <input
                         type="text"
                         className="w-full border p-3 rounded-lg"
                         value={jobData.name || ""}
                         onChange={e => handleChange("name", e.target.value)}
-                        onFocus={() => setShowDropdown(true)}
                     />
-
-                    {/* Dropdown */}
-                    {showDropdown && suggestions.length > 0 && (
-                        <div className="absolute w-full bg-white border rounded-lg shadow-md max-h-40 overflow-y-auto z-50">
-                            {suggestions.map((product) => (
-                                <div
-                                    key={product._id}
-                                    className="p-2 hover:bg-gray-100 cursor-pointer"
-                                    onClick={() => {
-                                        handleChange("name", product.name);
-                                        setShowDropdown(false);
-                                    }}
-                                >
-                                    {product.name}
-                                </div>
-                            ))}
-                        </div>
-                    )}
                 </div>
-
                 <div>
                     <label className="block font-semibold mb-2">
                         Size 

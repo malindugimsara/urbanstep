@@ -1,9 +1,7 @@
 import Order1 from "../modules/order1.js";
 
 
-/**
- * CREATE NEW ORDER
- */
+/* CREATE NEW ORDER */
 export const createOrder = async (req, res) => {
   try {
     const { customer, date, items } = req.body;
@@ -28,8 +26,8 @@ export const createOrder = async (req, res) => {
 
     // CALCULATE GRAND TOTAL (BACKEND TRUST)
     let totalPrice = 0;
-let totalDeliveryFee = 0;
-let grandTotal = 0;
+    let totalDeliveryFee = 0;
+    let grandTotal = 0;
 
 const normalizedItems = items.map((item) => {
   const price = Number(item?.data?.price) || 0;
@@ -53,34 +51,34 @@ const normalizedItems = items.map((item) => {
       deliveryFee,
       totalFee,
     },
-  };
-});
+    };
+  });
 
 
-    // AUTO GENERATE ORDER ID
+// AUTO GENERATE ORDER ID
    // FIND LAST ORDER
-const lastOrder = await Order1.findOne().sort({ createdAt: -1 });
+    const lastOrder = await Order1.findOne().sort({ createdAt: -1 });
 
-let nextNumber = 1;
+    let nextNumber = 1;
 
-if (lastOrder && lastOrder.orderId) {
-  const lastNumber = parseInt(lastOrder.orderId.split("-")[1]);
-  nextNumber = lastNumber + 1;
-}
+    if (lastOrder && lastOrder.orderId) {
+      const lastNumber = parseInt(lastOrder.orderId.split("-")[1]);
+      nextNumber = lastNumber + 1;
+    }
 
-const orderId = `ORD-${nextNumber.toString().padStart(3, "0")}`;
+    const orderId = `ORD-${nextNumber.toString().padStart(3, "0")}`;
 
 
     // CREATE ORDER
    const order = new Order1({
-  orderId,
-  customer,
-  date: date ? new Date(date) : new Date(),
-  items: normalizedItems,
-  price: totalPrice,
-  deliveryFee: totalDeliveryFee,
-  grandTotal,
-});
+      orderId,
+      customer,
+      date: date ? new Date(date) : new Date(),
+      items: normalizedItems,
+      price: totalPrice,
+      deliveryFee: totalDeliveryFee,
+      grandTotal,
+    });
 
 
     await order.save();
@@ -97,9 +95,7 @@ const orderId = `ORD-${nextNumber.toString().padStart(3, "0")}`;
   }
 };
 
-/**
- * GET ALL ORDERS
- */
+/* GET ALL ORDERS */
 export const getAllOrders = async (req, res) => {
   try {
     const orders = await Order1.find().sort({ createdAt: -1 });
@@ -113,9 +109,7 @@ export const getAllOrders = async (req, res) => {
   }
 };
 
-/**
- * GET SINGLE ORDER
- */
+/* GET SINGLE ORDER */
 export const getOrderById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -137,9 +131,7 @@ export const getOrderById = async (req, res) => {
   }
 };
 
-/**
- * UPDATE ITEM STATUS
- */
+/* UPDATE ITEM STATUS */
 export const updateItemStatus = async (req, res) => {
   try {
     const { orderId, index } = req.params;
@@ -168,9 +160,7 @@ export const updateItemStatus = async (req, res) => {
   }
 };
 
-/**
- * DELETE ORDER
- */
+/* DELETE ORDER */
 export const deleteOrder = async (req, res) => {
   try {
     const { id } = req.params;
@@ -193,3 +183,54 @@ export const deleteOrder = async (req, res) => {
     });
   }
 };
+
+export async function updateOrder(req, res) {
+  try {
+    const { customer, date, items } = req.body;
+
+    let totalPrice = 0;
+    let totalDelivery = 0;
+
+    items.forEach(item => {
+      const price = Number(item.data.price) || 0;
+      const deliveryFee = Number(item.data.deliveryFee) || 0;
+      const quantity = Number(item.data.quantity) || 0;
+
+      totalPrice += price * quantity;
+      totalDelivery += deliveryFee; 
+    });
+
+    const grandTotal = totalPrice + totalDelivery;
+
+    const updatedOrder = await Order1.findByIdAndUpdate(
+      req.params.orderId,
+      {
+        customer,
+        date,
+        items,
+        price: totalPrice,
+        deliveryFee: totalDelivery,
+        grandTotal
+      },
+      { new: true }
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res.json({
+      message: "Order updated successfully",
+      order: updatedOrder
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      message: "Error updating order",
+      error: err.message
+    });
+  }
+}
+
+
+

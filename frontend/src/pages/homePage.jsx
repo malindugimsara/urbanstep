@@ -6,12 +6,15 @@ import ProductOverview from "../client/productOverview.jsx";
 import CartPage from "../client/cartPage.jsx";
 import Checkout from "../client/checkOut.jsx";
 import Home from "../client/home.jsx";
+import Navbar from "../component/NavBar.jsx";
+import Footer from "../component/Footer.jsx";
 
 
 export default function HomePage() {
     return (
         <div className='w-full h-screen max-h-screen'>
-            <Header />
+            {/* <Header /> */}
+            <Navbar />
             <div className='w-full h-[calc(100vh-75px)] min-h-[calc(100vh-75px)] '>
                 <Routes path="/*">
                     <Route path="/home" element={<Home />} />
@@ -24,6 +27,7 @@ export default function HomePage() {
                     <Route path="/*" element={<div>404 Not Found</div>} />
                 </Routes>
             </div>
+            <Footer />
         </div>
     );
 }

@@ -12,23 +12,26 @@ export default function WelcomeAdmin() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get(import.meta.env.VITE_BACKEND_URL + "/api/job", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setJobs(res.data);
-      } catch (err) {
-        console.error("Failed to fetch jobs:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+ useEffect(() => {
+  const fetchJobs = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(import.meta.env.VITE_BACKEND_URL + "/api/order1", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setJobs(res.data);
+    } catch (err) {
+      console.error("Failed to fetch jobs:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchJobs();
-  }, []);
+  fetchJobs();
+  const interval = setInterval(fetchJobs, 5000);
+  return () => clearInterval(interval);
+}, []);
+
 
   // Compute job counts
   const summary = { Pending: 0, "In Progress": 0, Completed: 0 };

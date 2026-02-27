@@ -157,3 +157,18 @@ export async function searchProduct(req, res){
         });
     }
 }
+
+export const searchProducts1 = async (req, res) => {
+    try {
+        const query = req.query.q || "";
+
+        const products = await Product.find({
+            name: { $regex: query, $options: "i" }
+        }).select("name productId");
+
+        res.status(200).json(products);
+    } catch (error) {
+        console.error("Product search error:", error.message);
+        res.status(500).json({ message: "Server Error" });
+    }
+};

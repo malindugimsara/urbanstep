@@ -1,8 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 
 const  supabase = createClient(
-    "https://bwzzvppryhabbwtghqfh.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3enp2cHByeWhhYmJ3dGdocWZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4OTQzNzUsImV4cCI6MjA2NzQ3MDM3NX0.-ZNE_wzJFtSJogzSzZsGIQfz_u98N-_eO7iWUF-Rp2c"
+    "https://ziobsgqspskvrgsgntpd.supabase.co",
+    "sb_publishable_kH5Rlu440yHrZi3jTe0atw_32nhaAUK"
 )
 
 export default function mediaUpload(file){

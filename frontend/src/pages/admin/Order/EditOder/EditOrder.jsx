@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { FiClipboard, FiTrash2 } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
+import EditJobActions from "./EditJobActions";
+import EditShoe from "./EditShoe";
+import { useEffect } from "react";
 
-import AddJobActions from "./AddJobActions";
-import AddShoe from "./AddShoe";
-
-export default function AddOrderPage() {
+export default function EditOrder() {
+    const { orderId } = useParams();
+    const navigate = useNavigate()
 
     // CUSTOMER
     const [customer, setCustomer] = useState({
@@ -22,14 +24,61 @@ export default function AddOrderPage() {
     const [items, setItems] = useState([]);
     const [activeIndex, setActiveIndex] = useState(null);
     const [showSpinner, setShowSpinner] = useState(false);
+    const [loading, setLoading] = useState(true);
+    
+    
+    // FETCH ORDER DATA
+   useEffect(() => {
+    if (!orderId) {
+        console.log("orderId is missing");
+        return;
+    }
 
-    const navigate = useNavigate();
+    const fetchOrder = async () => {
+        try {
+            const res = await axios.get(
+                `${import.meta.env.VITE_BACKEND_URL}/api/order1/${orderId}`,
+                {
+                    headers: { 
+                        Authorization: "Bearer " + localStorage.getItem("token") 
+                    },
+                }
+            );
+
+            const order = res.data;
+
+            setCustomer({
+                name: order.customer.name,
+                phoneNumber: order.customer.phoneNumber,
+                address: order.customer.address,   
+            });
+
+            setDate(order.date.split("T")[0]);
+
+
+            setItems(order.items || []);
+
+            if (order.items && order.items.length > 0) {
+                setActiveIndex(0);
+            }
+
+            setLoading(false);
+
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to load order data");
+            setLoading(false);
+        }
+    };
+
+    fetchOrder();
+    }, [orderId]);
+
 
     // ADD NEW ITEM
     const addItem = (type) => {
         const newItem = {
             type, // "shoe"
-            status:"",
             data: {
                 name: "",
                 quantity: "",
@@ -37,7 +86,8 @@ export default function AddOrderPage() {
                 price: "",
                 deliveryFee: "",
                 totalFee: 0,
-            }, 
+            },
+            status: "Pending",
         };
 
         setItems(prev => [...prev, newItem]);
@@ -65,7 +115,6 @@ export default function AddOrderPage() {
             )
         );
     };
-
     // DELETE ITEM
     const deleteItem = (index) => {
         const newItems = items.filter((_, i) => i !== index);
@@ -79,7 +128,7 @@ export default function AddOrderPage() {
     };
 
     // SUBMIT ORDER
-    const submitJob = async () => {
+    const updateOrder = async () => {
         if (!customer.name || !customer.phoneNumber) {
             toast.error("Please fill all customer details");
             return;
@@ -99,17 +148,17 @@ export default function AddOrderPage() {
         try {
             setShowSpinner(true);
 
-            await axios.post(
-                import.meta.env.VITE_BACKEND_URL + "/api/order1",
+            await axios.put(
+                import.meta.env.VITE_BACKEND_URL + "/api/order1/" + orderId,
                 payload
             );
 
-            toast.success("Order submitted successfully!");
+            toast.success("Order Update successfully!");
             navigate("/admin/orders");
 
         } catch (err) {
             console.error(err);
-            toast.error(err.response?.data?.message || "Failed to submit order");
+            toast.error(err.response?.data?.message || "Failed to update order");
         } finally {
             setShowSpinner(false);
         }
@@ -126,9 +175,9 @@ export default function AddOrderPage() {
                     </div>
                     <div>
                         <h1 className="text-4xl font-bold text-[#2C3E50]">
-                            Add New Order
+                            Edit Order
                         </h1>
-                        <p className="text-gray-600">Create a new Shoe order</p>
+                        <p className="text-gray-600">Edit an existing order</p>
                     </div>
                 </div>
 
@@ -231,19 +280,23 @@ export default function AddOrderPage() {
                 {/* ACTIVE ITEM */}
                 <div className="mt-8">
                     {activeIndex !== null && items[activeIndex] && (
-                        <AddShoe
+                        <EditShoe
                             jobData={items[activeIndex].data}
-                            setJobData={(data) => updateItemData(activeIndex, data)}
-                            status={items[activeIndex].status}          // pass top-level
-                            setStatus={(s) => updateItemStatus(activeIndex, s)}  // update top-level
+                            setJobData={(data) =>
+                                updateItemData(activeIndex, data)
+                            }
+                            status={items[activeIndex].status}
+                            setStatus={(s) =>
+                                updateItemStatus(activeIndex, s)
+                            }
                         />
                     )}
                 </div>
 
                 {/* ACTION BUTTONS */}
-                <AddJobActions
+                <EditJobActions
                     addItem={() => addItem("shoe")}
-                    submitJob={submitJob}
+                    updateOrder={updateOrder}
                     showSpinner={showSpinner}
                 />
 

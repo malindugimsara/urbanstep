@@ -45,7 +45,7 @@ export default function ProductPage() {
 
     return (
         <div className="w-full h-full rounded-lg p-1 relative">
-            <Link to={"/admin/addproduct"} className="text-white bg-blue-500 hover:bg-blue-600 p-2 text-3xl rounded-full mb-4 flex items-center gap-2 absolute bottom-4 right-4">
+            <Link to={"/admin/addproduct"} className="fixed text-white bg-blue-700 hover:bg-blue-600 p-2 text-3xl rounded-full mb-4 flex items-center gap-2 absolute bottom-7 right-15 z-50">
                 <FaPlus />
             </Link>
             {loaded &&
@@ -73,7 +73,7 @@ export default function ProductPage() {
                                 <td className="p-2">{product.stock}</td>
                                 <td className="p-2 sm:p-4">
                                     <button
-                                    onClick={() => setFileModalJob(products)}
+                                    onClick={() => setFileModalJob(product)}
                                     className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-semibold transition-all duration-150 shadow "
                                     title="View Files"
                                     >
@@ -145,7 +145,7 @@ export default function ProductPage() {
                                 const url = window.URL.createObjectURL(blob);
                                 const a = document.createElement("a");
                                 a.href = url;
-                                a.download = `job-${fileModalJob.jobID}-file${i + 1}`;
+                                a.download = `job-${fileModalJob.productId}-file${i + 1}`;
                                 document.body.appendChild(a);
                                 a.click();
                                 a.remove();

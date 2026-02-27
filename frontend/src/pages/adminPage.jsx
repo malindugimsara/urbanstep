@@ -179,6 +179,7 @@ import WelcomeAdmin from "./admin/WelcomeAdmin";
 import UsersPage from "./admin/User/UserPage";
 import EditUser from "./admin/User/EditUser";
 import AddOrderPage from "./admin/Order/AddOrder/AddOrder";
+import EditOrder from "./admin/Order/EditOder/EditOrder";
 
 
 
@@ -315,6 +316,7 @@ export default function AdminPage() {
               <Route path="/createaccount" element={<CreateAdminAccount />} />
               <Route path="/report" element={<ReportGenerate />} />
               <Route path="/addorder" element={<AddOrderPage />} />
+              <Route path="/editorder/:orderId" element={<EditOrder />} />
             </Routes>
           </div>
         </>

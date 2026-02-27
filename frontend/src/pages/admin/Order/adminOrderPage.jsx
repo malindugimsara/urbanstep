@@ -3,7 +3,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { FaPlus } from "react-icons/fa";
 import { IoCloseSharp } from "react-icons/io5";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Loader from "../../../component/loader";
 import { MdOutlineDeleteOutline, MdOutlineEdit } from "react-icons/md";
 
@@ -18,6 +18,7 @@ export default function AdminOrderPage() {
   const [searchDate, setSearchDate] = useState("");
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const navigate = useNavigate();
 
   // Fetch orders
   useEffect(() => {
@@ -28,7 +29,6 @@ export default function AdminOrderPage() {
         headers: { Authorization: "Bearer " + token },
       })
       .then((res) => {
-        console.log("Orders:", res.data);
         setOrders(res.data);
       })
       .catch((err) => {
@@ -93,7 +93,7 @@ export default function AdminOrderPage() {
         />
         <input
           type="text"
-          placeholder="Search Phone"
+          placeholder="Search Phone Number"
           value={searchPhone}
           onChange={(e) => setSearchPhone(e.target.value)}
           className="border border-blue-200 p-3 rounded-lg"
@@ -128,6 +128,7 @@ export default function AdminOrderPage() {
                   <th className="p-4 font-bold">Phone</th>
                   <th className="p-4 font-bold">Total</th>
                   <th className="p-4 font-bold">Date</th>
+                  <th className="p-4 font-bold">Status</th>
                   <th className="p-4 font-bold">Details</th>
                   <th className="p-4 font-bold">Actions</th>
                 </tr>
@@ -148,6 +149,24 @@ export default function AdminOrderPage() {
                       {new Date(order.date).toLocaleDateString()}
                     </td>
                     <td className="p-4">
+                      {order.items?.map((item, idx) => (
+                        <span
+                          key={idx}
+                          className={`font-semibold flex flex-col  ${
+                            item.status === "Pending"
+                              ? "text-red-500"
+                              : item.status === "In Progress"
+                              ? "text-blue-500"
+                              : item.status === "Completed"
+                              ? "text-green-500"
+                              : "text-gray-500"
+                          }`}
+                        >
+                          {item.status}
+                        </span>
+                      ))}
+                    </td>
+                    <td className="p-4">
                       <button
                         className="bg-blue-500 text-white px-4 py-1 rounded-2xl hover:bg-blue-700"
                         onClick={() => setModalOrder(order)}
@@ -166,7 +185,7 @@ export default function AdminOrderPage() {
                           className="text-[24px] text-red-500 hover:text-red-700 cursor-pointer"/>
 
                           <MdOutlineEdit onClick={()=>{
-                              navigate("/admin/editorder/",{
+                              navigate(`/admin/editorder/${order._id}`,{
                               state: order})
                           }}
                           className="text-[24px] text-blue-500 hover:text-blue-700 cursor-pointer"/>
@@ -205,9 +224,8 @@ export default function AdminOrderPage() {
               <p><b>Name:</b> {modalOrder.customer?.name}</p>
               <p><b>Phone:</b> {modalOrder.customer?.phoneNumber}</p>
               <p><b>Address:</b> {modalOrder.customer?.address}</p>
-              <p><b>Price:</b> Rs.{modalOrder.price?.toFixed(2)}</p>
-              <p><b>Delivery Fee:</b> Rs.{modalOrder.deliveryFee?.toFixed(2)}</p>
               <p><b>Date:</b> {new Date(modalOrder.date).toLocaleString()}</p>
+              <p><b>Total Price:</b> Rs.{modalOrder.grandTotal?.toFixed(2)}</p>
             </div>
 
             {/* Items */}
@@ -215,9 +233,23 @@ export default function AdminOrderPage() {
               {modalOrder.items?.map((item, idx) => (
                 <div key={idx} className="border rounded-lg p-4 bg-gray-50">
                   <h3 className="font-bold mb-2">
-                    {item.data.name} — Qty: {item.data.quantity}
+                    {item.data.name} — Qty: {item.data.quantity} — Size: {item.data.size}
                   </h3>
-                  <p>Total Price: Rs.{item.data.totalFee?.toFixed(2)}</p>
+                  <p>Price: Rs.{item.data.price?.toFixed(2)}</p>
+                  <p>Delivery Fee: Rs.{item.data.deliveryFee?.toFixed(2)}</p>
+                  <p> <b>Total Price:</b> Rs.{item.data.totalFee?.toFixed(2)}</p>
+                  <p>Status : 
+                    <span
+                          className={`px-3 py-1 rounded-full font-semibold ${
+                            item.status === "Pending"
+                              ? "text-red-500"
+                              : item.status === "Completed"
+                              ? "text-green-500"
+                              : "text-blue-500"
+                          }`}
+                        >{item.status}
+                    </span>
+                </p>
                 </div>
               ))}
             </div>
