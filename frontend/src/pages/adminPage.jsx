@@ -215,6 +215,7 @@ export default function AdminPage() {
         .catch(() => {
           setStatus("unauthenticated");
           toast.error("Session expired. Please login again.");
+          console.log(error);
           navigate("/");
         });
     }

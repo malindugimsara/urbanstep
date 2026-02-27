@@ -83,13 +83,13 @@ const Footer = () => {
             </h4>
             <ul className="space-y-3 text-sm text-gray-400">
               <li>
-                <a href="mailto:hello@urbanstep.com" className="hover:text-orange-500 transition-colors">
-                  hello@urbanstep.com
+                <a href="mailto:urbanstep@gmail.com" className="hover:text-orange-500 transition-colors">
+                  urbanstep@gmail.com
                 </a>
               </li>
               <li>
-                <a href="tel:+15551234567" className="hover:text-orange-500 transition-colors">
-                  +1 (555) 123-4567
+                <a href="tel:+94788536767" className="hover:text-orange-500 transition-colors">
+                  +94 78 853 6767
                 </a>
               </li>
               <li className="flex gap-4 pt-4">

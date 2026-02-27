@@ -17,6 +17,7 @@ export default function HomePage() {
             <Navbar />
             <div className='w-full h-[calc(100vh-75px)] min-h-[calc(100vh-75px)] '>
                 <Routes path="/*">
+                    <Route path="/" element={<Home />} />
                     <Route path="/home" element={<Home />} />
                     <Route path="/products" element={<ProductPage />} />
                     <Route path="/contact" element= {<Contact />} />
