@@ -1,6 +1,8 @@
+import axios from "axios";
 import { useEffect, useState } from "react";    
 import { TbTrash } from "react-icons/tb";
 import { useLocation, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export default function Checkout() {
     const location = useLocation();
@@ -12,18 +14,62 @@ export default function Checkout() {
     const navigate = useNavigate();
 
     function placeOrder() {
-        const orderdata = {
-            name,
-            address,
-            phone,
-            billItems: cart.map(item => ({
-                productId: item.productId,
-                quantity: item.quantity
-            }))
-        };
-        console.log("Placing Order:", orderdata);
-        navigate("/order-success", { state: { order: orderdata } });
+
+    if (!name || !phone || !address) {
+        toast.error("Please fill all customer details");
+        return;
     }
+
+    if (cart.length === 0) {
+        toast.error("Cart is empty");
+        return;
+    }
+
+    const orderData = {
+        customer: {
+            name: name,
+            phoneNumber: phone,
+            address: address
+        },
+
+        date: new Date(),
+
+        items: cart.map((item) => ({
+            type: "shoe",
+            status: "Pending",
+            data: {
+                name: item.name,
+                quantity: item.quantity,
+                size: item.size,
+                price: item.price,
+                deliveryFee: 300   // you can change this logic
+            }
+        }))
+    };
+
+    const token = localStorage.getItem("token");
+
+    axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/order1`,
+        orderData,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    )
+    .then((response) => {
+        toast.success("Order placed successfully!");
+        console.log(response.data);
+        navigate("/products");
+    })
+    .catch((error) => {
+        console.error("Error placing order:", error);
+        toast.error(
+            error.response?.data?.message || "Failed to place order"
+        );
+    });
+}
 
     function GetTotal() {
         return cart.reduce((sum, p) => sum + p.price * p.quantity, 0);

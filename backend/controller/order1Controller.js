@@ -62,16 +62,18 @@ const normalizedItems = items.map((item) => {
     let nextNumber = 1;
 
     if (lastOrder && lastOrder.orderId) {
-      const lastNumber = parseInt(lastOrder.orderId.split("-")[1]);
-      nextNumber = lastNumber + 1;
-    }
+      const parts = lastOrder.orderId.split("-");
+      const lastNumber = parseInt(parts[1]);
 
-    const orderId = `ORD-${nextNumber.toString().padStart(3, "0")}`;
+      if (!isNaN(lastNumber)) {
+        nextNumber = lastNumber + 1;
+      }
+    }
 
 
     // CREATE ORDER
    const order = new Order1({
-      orderId,
+      orderId: `ORD-${nextNumber.toString().padStart(3, "0")}`,
       customer,
       date: date ? new Date(date) : new Date(),
       items: normalizedItems,

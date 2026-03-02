@@ -164,11 +164,10 @@ export const searchProducts1 = async (req, res) => {
 
         const products = await Product.find({
             name: { $regex: query, $options: "i" }
-        }).select("name productId");
+        });
 
         res.status(200).json(products);
     } catch (error) {
-        console.error("Product search error:", error.message);
-        res.status(500).json({ message: "Server Error" });
+        res.status(500).json({ message: "Search failed" });
     }
 };

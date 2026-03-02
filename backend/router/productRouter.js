@@ -7,8 +7,10 @@ productRouter.post('/', createProduct)
 productRouter.get('/', getProduct);
 productRouter.delete('/:productId', deleteProduct)
 productRouter.put('/:productId', updateProduct);
-productRouter.get("/:id", getProductById)
-productRouter.get("/search/:id", searchProduct)
 productRouter.get("/search", searchProducts1)
+productRouter.get("/search/:id", searchProduct)
+productRouter.get("/:id", getProductById)
+
+
 
 export default productRouter;

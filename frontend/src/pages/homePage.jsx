@@ -8,6 +8,8 @@ import Checkout from "../client/checkOut.jsx";
 import Home from "../client/home.jsx";
 import Navbar from "../component/NavBar.jsx";
 import Footer from "../component/Footer.jsx";
+import EditAccount from "../client/EditAccount.jsx";
+import UsersAccountDetails from "../client/UserAccountDetails.jsx";
 
 
 export default function HomePage() {
@@ -15,7 +17,7 @@ export default function HomePage() {
         <div className='w-full h-screen max-h-screen'>
             {/* <Header /> */}
             <Navbar />
-            <div className='w-full h-[calc(100vh-75px)] min-h-[calc(100vh-75px)] '>
+            <div className='flex-grow'>
                 <Routes path="/*">
                     <Route path="/" element={<Home />} />
                     <Route path="/home" element={<Home />} />
@@ -25,6 +27,8 @@ export default function HomePage() {
                     <Route path="/overview/:productId" element={<ProductOverview />} /> 
                     <Route path="/cart" element={<CartPage />} />
                     <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/editaccount" element={<EditAccount />} />
+                    <Route path="/viewaccount" element={<UsersAccountDetails />} />
                     <Route path="/*" element={<div>404 Not Found</div>} />
                 </Routes>
             </div>

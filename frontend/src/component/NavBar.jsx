@@ -1,6 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
 import { ShoppingBag, Menu, X, Search, User } from "lucide-react";
+import { CiShoppingCart } from "react-icons/ci";
 import { useState } from "react";
+import { AiOutlineLogout } from "react-icons/ai";
+import { FaRegUser } from "react-icons/fa";
 
 const Navbar = () => {
   const location = useLocation();
@@ -8,7 +11,7 @@ const Navbar = () => {
 
   const links = [
     { to: "/home", label: "Home" },
-    { to: "/shop", label: "Shop" },
+    { to: "/products", label: "Shop" },
   ];
 
   const isActive = (path) => location.pathname === path;
@@ -34,7 +37,7 @@ const Navbar = () => {
             <Link
               key={l.to}
               to={l.to}
-              className={`text-sm font-semibold transition-colors hover:text-orange-500 ${
+              className={`text-md font-semibold transition-colors hover:text-orange-500  ${
                 isActive(l.to) ? "text-orange-500" : "text-gray-500"
               }`}
             >
@@ -46,28 +49,27 @@ const Navbar = () => {
         {/* Right: Icons */}
         <div className="flex-1 flex items-center justify-end gap-5">
           <Link
-            to="/shop"
+            to="/viewaccount"
             className="text-gray-900 hover:text-orange-500 transition-colors hidden md:block"
           >
-            <Search className="w-5 h-5 stroke-[1.5]" />
-          </Link>
-          
-          <Link
-            to="/login"
-            className="text-gray-900 hover:text-orange-500 transition-colors hidden md:block"
-          >
-            <User className="w-5 h-5 stroke-[1.5]" />
+            <FaRegUser className="w-4 h-5 stroke-[1.5]" />
           </Link>
 
           <Link
             to="/cart"
             className="relative text-gray-900 hover:text-orange-500 transition-colors"
           >
-            <ShoppingBag className="w-5 h-5 stroke-[1.5]" />
-            {/* Keeping the badge structure here in case you re-add the context later */}
-            {/* <span className="absolute -top-1.5 -right-1.5 bg-orange-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
-              2
-            </span> */}
+            <CiShoppingCart className="w-6 h-5 stroke-[1.5]" />
+            {/* Keeping the badge structure here in case you re-add the context later*/}
+            <span className="absolute -top-0.5 -right-0.5 bg-orange-500 text-white text-[10px] font-bold rounded-full w-2.5 h-2.5 flex items-center justify-center">
+              
+            </span> 
+          </Link>
+          <Link
+            to="/login"
+            className="text-red-500 hover:text-red-700 transition-colors hidden md:block"
+          >
+            <AiOutlineLogout className="w-6 h-6 stroke-[1.5]" />
           </Link>
 
           {/* Mobile Menu Toggle */}
@@ -104,11 +106,11 @@ const Navbar = () => {
             ))}
             {/* Mobile Icon Links */}
             <div className="flex gap-6 mt-2 pt-4 border-t border-gray-100">
-              <Link to="/shop" className="text-gray-600 hover:text-orange-500">
-                <Search className="w-5 h-5" />
-              </Link>
-              <Link to="/login" className="text-gray-600 hover:text-orange-500">
+              <Link to="/viewaccount" className="text-gray-600 hover:text-orange-500">
                 <User className="w-5 h-5" />
+              </Link>
+              <Link to="/shop" className="text-red-500 hover:text-red-700">
+                <AiOutlineLogout className="w-6 h-6 stroke-[1.5]" />
               </Link>
             </div>
           </div>

@@ -42,18 +42,23 @@ export default function ProductOverview() {
             }
             {
                 status=="loaded" && 
-                <div className="w-full h-full flex flex-col lg:flex-row ">
+                <div className="w-full h-full flex flex-col lg:flex-row lg:gap-4"> {/* Added gap for breathing room */}
                     <h1 className="text-3xl lg:hidden font-bold text-center mb-4">{product.name}</h1>
                     <h2 className="text-xl lg:hidden font-semibold text-center text-gray-500 mb-4">{product.altName.join(" | ")}</h2>
                     
-                    <div className="w-full">
-                        <Link to={"/products"}>
-                            <IoArrowBack className="text-2xl bg-black text-white flex m-[5px] p-[2px]" />
+                    {/* Added lg:w-1/2 to share space, and relative to contain absolute children from the slider */}
+                    <div className="w-full lg:w-1/2 relative lg:mb-4 lg:mt-4"> 
+                        <Link to={"/products"} className="absolute top-2 left-2 z-10"> {/* Made absolute to float neatly over the image */}
+                            <IoArrowBack className="text-3xl bg-black text-white flex rounded-full m-[5px] p-[4px] hover:bg-gray-800 transition-colors" />
                         </Link>
                         <ImageSlider images={product.images} />
                     </div>
+
+                    {/* Assuming your product details go here, they also need lg:w-1/2 */}
+                    
+
                    
-                    <div className="w-full lg:w[50%] h-full p-[40px] pt-[100px] ">
+                    <div className="w-full lg:w-1/2 h-full p-[40px] pt-[100px] ">
                         <h1 className="text-3xl hidden lg:block font-bold text-center mb-4">{product.name}</h1>
                         <h2 className="text-xl hidden lg:block font-semibold text-center text-gray-500 mb-4">{product.altName.join(" | ")}</h2>
                         <div className="text-BLACK p-4">

@@ -6,7 +6,7 @@ const Home = () => {
   return (
     <div>
       <section className="relative bg-[#111111] text-white overflow-hidden">
-        <div className="container mx-auto px-5 py-16 sm:py-20 md:py-28 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <div className="container mx-auto px-5 py-16 sm:py-20 md:py-28 grid grid-cols-1 md:grid-cols-2 gap-10 items-center lg:ml-10">
           
           {/* Left Content */}
           <div className="space-y-6 text-center md:text-left">
@@ -32,14 +32,14 @@ const Home = () => {
             {/* Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-4">
               <Link
-                to="/shop"
+                to="/products"
                 className="inline-flex justify-center items-center gap-2 bg-orange-500 text-white px-7 py-3 rounded-full font-bold text-sm hover:bg-orange-600 transition-all duration-300 hover:scale-105"
               >
                 Shop Now <ArrowRight className="w-4 h-4 stroke-[2.5]" />
               </Link>
 
               <Link
-                to="/shop"
+                to="/products"
                 className="inline-flex justify-center items-center gap-2 border border-gray-700 text-white px-7 py-3 rounded-full font-bold text-sm hover:bg-gray-800 transition-all duration-300"
               >
                 Explore
@@ -48,7 +48,7 @@ const Home = () => {
           </div>
 
           {/* Image */}
-          <div className="relative order-first md:order-none">
+          <div className="relative order-first md:order-none lg:mr-10">
             <img
               src={heroImage}
               alt="Urban Step premium sneakers"

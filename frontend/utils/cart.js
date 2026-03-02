@@ -28,7 +28,7 @@ export function AddToCart(product, qty) {
     } else{
         cart[productIndex].quantity += qty;
         if (cart[productIndex].quantity <= 0){
-            cart = cart.filter((product) => product.productId !== product.productId)
+            cart = cart.filter((prduct) => prduct.productId !== product.productId)
         }
     }
     localStorage.setItem("cart", JSON.stringify(cart));
