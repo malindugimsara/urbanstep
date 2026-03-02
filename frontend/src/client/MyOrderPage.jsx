@@ -77,7 +77,7 @@ const MyOrdersPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] pt-16 lg:pt-5 sm:pt-20 pb-10">
+    <div className="min-h-screen bg-[#F8F9FA] pt-5 pb-10">
       <div className="container mx-auto px-4 sm:px-5 max-w-6xl">
 
         {/* PAGE TITLE */}
@@ -132,7 +132,7 @@ const MyOrdersPage = () => {
                 <thead>
                   <tr className="border-b border-[#E0E0E0] text-[#2C3E50] font-semibold">
                     <th className="py-3 sm:py-4 px-3 sm:px-4">Tracking #</th>
-                    <th className="py-3 sm:py-4 px-3 sm:px-4">Customer</th>
+                    <th className="py-3 sm:py-4 px-3 sm:px-4 hidden md:table-cell">Customer</th>
                     <th className="py-3 sm:py-4 px-3 sm:px-4">Date</th>
                     <th className="py-3 sm:py-4 px-3 sm:px-4">Status</th>
                     <th className="py-3 sm:py-4 px-3 sm:px-4">Total</th>
@@ -150,12 +150,12 @@ const MyOrdersPage = () => {
                         {order.orderId}
                       </td>
 
-                      <td className="py-3 sm:py-4 px-3 sm:px-4">
+                      <td className="py-3 sm:py-4 px-3 sm:px-4 hidden md:table-cell text-[#2C3E50]">
                         <p className="font-medium text-xs sm:text-sm">{order.customer?.name || "N/A"}</p>
                         
                       </td>
 
-                      <td className="py-3 sm:py-4 px-3 sm:px-4 text-[#2C3E50]/70 hidden md:table-cell text-xs sm:text-sm">
+                      <td className="py-3 sm:py-4 px-3 sm:px-4 text-[#2C3E50]/70 md:table-cell text-xs sm:text-sm">
                         {new Date(order.createdAt).toLocaleDateString()}
                       </td>
 
@@ -170,7 +170,7 @@ const MyOrdersPage = () => {
                         </span>
                       </td>
 
-                      <td className="py-3 sm:py-4 px-3 sm:px-4 text-[#2C3E50] font-medium hidden lg:table-cell text-xs sm:text-sm">
+                      <td className="py-3 sm:py-4 px-3 sm:px-4 text-[#2C3E50] font-medium  lg:table-cell text-xs sm:text-sm">
                        Rs. {order.grandTotal}
                       </td>
               

@@ -157,7 +157,7 @@ export default function AdminOrderPage() {
                               ? "text-red-500"
                               : item.status === "In Progress"
                               ? "text-blue-500"
-                              : item.status === "Completed"
+                              : item.status === "Delivered" || item.status === "Completed"
                               ? "text-green-500"
                               : "text-gray-500"
                           }`}
