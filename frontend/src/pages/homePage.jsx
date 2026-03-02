@@ -10,6 +10,8 @@ import Navbar from "../component/NavBar.jsx";
 import Footer from "../component/Footer.jsx";
 import EditAccount from "../client/EditAccount.jsx";
 import UsersAccountDetails from "../client/UserAccountDetails.jsx";
+import MyOrdersPage from "../client/MyOrderPage.jsx";
+import EditOrder from "../client/EditOrder.jsx";
 
 
 export default function HomePage() {
@@ -29,6 +31,8 @@ export default function HomePage() {
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/editaccount" element={<EditAccount />} />
                     <Route path="/viewaccount" element={<UsersAccountDetails />} />
+                    <Route path="/orders" element={<MyOrdersPage />} />
+                    <Route path="/editorder" element={<EditOrder />} />
                     <Route path="/*" element={<div>404 Not Found</div>} />
                 </Routes>
             </div>

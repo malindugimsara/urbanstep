@@ -1,5 +1,5 @@
 import express from "express";
-import { createOrder, deleteOrder, getAllOrders, getOrderById, updateItemStatus, updateOrder } from "../controller/order1Controller.js";
+import { createOrder, deleteOrder, getAllOrders, getOrderById, getOrdersByPhone, updateItemStatus, updateOrder } from "../controller/order1Controller.js";
 
 
 const router = express.Router();
@@ -10,6 +10,7 @@ router.get("/:id", getOrderById);
 router.patch("/:orderId/item/:index", updateItemStatus);
 router.put("/:orderId", updateOrder);
 router.delete("/:id", deleteOrder);
+router.get("/phone/:phoneNumber", getOrdersByPhone);
     
 
 export default router;

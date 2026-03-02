@@ -145,7 +145,7 @@ export default function AddShoe({ jobData, setJobData, status, setStatus }) {
                     >
                         <option value="Pending">Pending</option>
                         <option value="In Progress">In Progress</option>
-                        <option value="Completed">Completed</option>
+                        <option value="Delivered">Delivered</option>
                     </select>
                 </div>
             </div>

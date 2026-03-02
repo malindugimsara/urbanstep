@@ -234,5 +234,20 @@ export async function updateOrder(req, res) {
   }
 }
 
+/* GET ORDERS BY CUSTOMER PHONE */
+export const getOrdersByPhone = async (req, res) => {
+  try {
+    const { phoneNumber } = req.params;
 
+    const orders = await Order1.find({
+      "customer.phoneNumber": phoneNumber
+    }).sort({ createdAt: -1 });
 
+    return res.status(200).json(orders);
+  } catch (error) {
+    console.error("Get Orders By Phone Error:", error);
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};

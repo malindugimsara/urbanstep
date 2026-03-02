@@ -27,10 +27,10 @@ export default function LoginPage() {
             toast.success("Login successful!");
 
             localStorage.setItem("token", response.data.token);
-
+            
             const user = response.data.user;
-            console.log(user.email)
-
+           localStorage.setItem("phoneNumber", response.data.user.phoneNumber);
+           
             localStorage.setItem("email", response.data.user.email);
             // Persist same user object as regular login so other components can read it
             localStorage.setItem(
@@ -42,8 +42,8 @@ export default function LoginPage() {
                 role: user.role || "user",
               })
             );
-            localStorage.setItem("name", user.name);
-
+           localStorage.setItem("name", user.name);
+          
             if (user.role === "admin") navigate("/admin");
             else navigate("/home");
         })
@@ -102,6 +102,7 @@ export default function LoginPage() {
         }
         localStorage.setItem("name", response.data.user.name);
         localStorage.setItem("email", response.data.user.email);
+        localStorage.setItem("phoneNumber", response.data.user.phoneNumber);
       })
       .catch((error) => {
         console.error("Login failed:", error);

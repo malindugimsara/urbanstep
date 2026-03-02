@@ -11,6 +11,7 @@ export default function Checkout() {
     const [name, setName] = useState("");
     const [address, setAddress] = useState("");
     const [phone, setPhone] = useState("");
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     function placeOrder() {
@@ -68,6 +69,7 @@ export default function Checkout() {
         toast.error(
             error.response?.data?.message || "Failed to place order"
         );
+        setLoading(false);
     });
 }
 
@@ -188,7 +190,7 @@ export default function Checkout() {
                         placeholder="Enter your address" 
                     />
 
-                    <label className="block text-gray-700 font-medium mb-2 mt-4" htmlFor="phone">Phone</label>
+                    <label className="block text-gray-700 font-medium mb-2 mt-4" htmlFor="phone">Phone Number</label>
                     <input  
                         type="text" 
                         id="phone" 
@@ -204,8 +206,9 @@ export default function Checkout() {
                     <button 
                         className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors duration-200"
                         onClick={placeOrder}
+                        disabled={loading}
                     >
-                        Place Order
+                        {loading ? "Placing..." : "Place Order"}
                     </button>
                 </div>
             </div>
